@@ -1,5 +1,6 @@
 # Neural Collaborative Filtering (with TensorFlow 2)
 Modified to run with TensorFlow2
+
 Environment: python 3.6,  tensorflow 2.4.1
 
 ----------------Below is the original words of authors -----------------------------
@@ -16,7 +17,7 @@ Author: Dr. Xiangnan He (http://www.comp.nus.edu.sg/~xiangnan/)
 
 ## Environment Settings
 We use TensorFlow 2as the backend. 
-- TensorFlow version:  '2.4.1'
+- TensorFlow version: 2.4.1
 
 ## Example to run the codes.
 The instruction of commands has been clearly stated in the codes (see the  parse_args function). 
