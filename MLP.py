@@ -8,16 +8,15 @@ He Xiangnan et al. Neural Collaborative Filtering. In WWW 2017.
 
 import numpy as np
 
-
-import keras
-from keras import backend as K
-from keras import initializers
-from keras.regularizers import l2 
-from keras.models import Sequential,  Model
-from keras.layers.core import Dense, Lambda, Activation
-from keras.layers import Embedding, Input, Dense, merge, Reshape, Merge, Flatten, Dropout
-from keras.constraints import maxnorm
-from keras.optimizers import Adagrad, Adam, SGD, RMSprop
+import tensorflow as tf
+from tensorflow.keras import backend as K
+from tensorflow.keras import initializers
+from tensorflow.keras.regularizers import l2 
+from tensorflow.keras.models import Sequential,  Model
+from tensorflow.keras.layers import Dense, Lambda, Activation
+from tensorflow.keras.layers import Embedding, Input, Dense, Reshape, Flatten, Dropout
+from tensorflow.keras.constraints import MaxNorm
+from tensorflow.keras.optimizers import Adagrad, Adam, SGD, RMSprop
 from evaluate import evaluate_model
 from Dataset import Dataset
 from time import time
@@ -64,9 +63,9 @@ def get_model(num_users, num_items, layers = [20,10], reg_layers=[0,0]):
     item_input = Input(shape=(1,), dtype='int32', name = 'item_input')
 
     MLP_Embedding_User = Embedding(input_dim = num_users, output_dim = int(layers[0]/2), name = 'user_embedding',
-                                  embeddings_initializer =  keras.initializers.RandomNormal(mean=0.0, stddev=0.01, seed=None), embeddings_regularizer = l2(reg_layers[0]), input_length=1)
+                                  embeddings_initializer =  tf.keras.initializers.RandomNormal(mean=0.0, stddev=0.01, seed=None), embeddings_regularizer = l2(reg_layers[0]), input_length=1)
     MLP_Embedding_Item = Embedding(input_dim = num_items, output_dim = int(layers[0]/2), name = 'item_embedding',
-                                  embeddings_initializer =  keras.initializers.RandomNormal(mean=0.0, stddev=0.01, seed=None), embeddings_regularizer = l2(reg_layers[0]), input_length=1)   
+                                  embeddings_initializer =  tf.keras.initializers.RandomNormal(mean=0.0, stddev=0.01, seed=None), embeddings_regularizer = l2(reg_layers[0]), input_length=1)   
     
     # Crucial to flatten an embedding vector!
     user_latent = Flatten()(MLP_Embedding_User(user_input))
@@ -74,7 +73,7 @@ def get_model(num_users, num_items, layers = [20,10], reg_layers=[0,0]):
     
     # The 0-th layer is the concatenation of embedding layers
     #vector = merge([user_latent, item_latent], mode = 'concat')
-    vector = keras.layers.Concatenate(axis=-1)([user_latent, item_latent])
+    vector = tf.keras.layers.Concatenate(axis=-1)([user_latent, item_latent])
     
     # MLP layers
     for idx in range(1, num_layer):
