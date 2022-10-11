@@ -12,25 +12,22 @@ for filename in xla_hlo/*; do
 done
 rm xla_hlo/*/*
 
+# Basic Configurations for NCF
+BATCH=128 # 128, 256, 512, 1024
+FACTORS=8 # 8, 16, 32, 64
+EPOCHS=1
+
 # XLA
-export DATADIR=/home/shared/ILSVRC2012
 export TF_XLA_FLAGS="--tf_xla_clustering_debug --tf_xla_auto_jit=2"
 export TF_DUMP_GRAPH_PREFIX="./xla_hlo"
 
 # simulation
 export TRACER_TOOL=/home/jueonpark/cxl-simulator/multi_gpu_simulator/util/tracer_nvbit/tracer_tool/tracer_tool.so
 export POST_PROCESSING=/home/jueonpark/cxl-simulator/multi_gpu_simulator/util/tracer_nvbit/tracer_tool/traces-processing/post-traces-processing
+
 # caution!
-# for image size 32 baseline: 3071
-# for image size 32 fo: 3048?
-# for image size 224 and ViT base configuration:
-# - 1589-2002
-# - 4403-4898
-# for image size 224 and ViT base configuration, with FO:
-# - 1582-1939
-# - 4336-4795 
-export DYNAMIC_KERNEL_LIMIT_START=4336
-export DYNAMIC_KERNEL_LIMIT_END=4795
+export DYNAMIC_KERNEL_LIMIT_START=999998
+export DYNAMIC_KERNEL_LIMIT_END=999999
 
 # additional runtime environment variables for tensorflow
 # export TF_CPP_MIN_VLOG_LEVEL=1
@@ -87,11 +84,35 @@ fi
 if [ $# -ge 2 ] && [ $2 = "trace" ]
 then
   # LD_PRELOAD=$TRACER_TOOL python GMF.py --dataset ml-1m --epochs 1 --batch_size 256 --num_factors 8 --regs [0,0] --num_neg 4 --lr 0.001 --learner adam --verbose 1 --out 1
-  LD_PRELOAD=$TRACER_TOOL python MLP.py --dataset ml-1m --epochs 1 --batch_size 256 --layers [64,32,16,8] --reg_layers [0,0,0,0] --num_neg 4 --lr 0.001 --learner adam --verbose 1 --out 1
-  # LD_PRELOAD=$TRACER_TOOL python NeuMF.py --dataset ml-1m --epochs 1 --batch_size 256 --num_factors 8 --layers [64,32,16,8] --reg_mf 0 --reg_layers [0,0,0,0] --num_neg 4 --lr 0.001 --learner adam --verbose 1 --out 1
+  # LD_PRELOAD=$TRACER_TOOL python MLP.py --dataset ml-1m --epochs 1 --batch_size 256 --layers [64,32,16,8] --reg_layers [0,0,0,0] --num_neg 4 --lr 0.001 --learner adam --verbose 1 --out 1
+  LD_PRELOAD=$TRACER_TOOL python NeuMF.py \
+    --dataset ml-1m \
+    --epochs 1 \
+    --batch_size 256 \
+    --num_factors 8 \
+    --layers [64,32,16,8] \
+    --reg_mf 0 \
+    --reg_layers [0,0,0,0] \
+    --num_neg 4 \
+    --lr 0.001 \
+    --learner adam \
+    --verbose 1 \
+    --out 1
   $POST_PROCESSING ./traces/kernelslist
 else
   # python GMF.py --dataset ml-1m --epochs 1 --batch_size 256 --num_factors 8 --regs [0,0] --num_neg 4 --lr 0.001 --learner adam --verbose 1 --out 1
-  python MLP.py --dataset ml-1m --epochs 1 --batch_size 256 --layers [64,32,16,8] --reg_layers [0,0,0,0] --num_neg 4 --lr 0.001 --learner adam --verbose 1 --out 1
-  # python NeuMF.py --dataset ml-1m --epochs 20 --batch_size 256 --num_factors 8 --layers [64,32,16,8] --reg_mf 0 --reg_layers [0,0,0,0] --num_neg 4 --lr 0.001 --learner adam --verbose 1 --out 1
+  # python MLP.py --dataset ml-1m --epochs 1 --batch_size 256 --layers [64,32,16,8] --reg_layers [0,0,0,0] --num_neg 4 --lr 0.001 --learner adam --verbose 1 --out 1
+  python NeuMF.py \
+    --dataset ml-1m \
+    --epochs 20 \
+    --batch_size 256 \
+    --num_factors 8 \
+    --layers [64,32,16,8] \
+    --reg_mf 0 \
+    --reg_layers [0,0,0,0] \
+    --num_neg 4 \
+    --lr 0.001 \
+    --learner adam \
+    --verbose 1 \
+    --out 1
 fi
