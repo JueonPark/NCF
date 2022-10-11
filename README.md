@@ -16,7 +16,7 @@ Three collaborative filtering models: Generalized Matrix Factorization (GMF), Mu
 Author: Dr. Xiangnan He (http://www.comp.nus.edu.sg/~xiangnan/)
 
 ## Environment Settings
-We use TensorFlow 2as the backend. 
+We use TensorFlow 2 as the backend. 
 - TensorFlow version: 2.4.1
 
 ## Example to run the codes.
